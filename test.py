@@ -130,7 +130,19 @@ def get_estimators_name(estimators):
 
 if __name__ == "__main__":
     estimators = get_best_estimators(True)
-    estimators_str, estimator_dict = get_estimators_name(estimators)
+    if not estimators:
+        # Fallback to a default set if loading fails
+        from sklearn.ensemble import BaggingClassifier
+        estimators_str = '"BaggingClassifier"'
+        estimator_dict = {"BaggingClassifier": BaggingClassifier()}
+    else:
+        estimators_str, estimator_dict = get_estimators_name(estimators)
+    
+    # Ensure we have a fallback if dictionary is empty
+    if not estimator_dict:
+        from sklearn.ensemble import BaggingClassifier
+        estimators_str = '"BaggingClassifier"'
+        estimator_dict = {"BaggingClassifier": BaggingClassifier()}
     import argparse
     parser = argparse.ArgumentParser(description="""
                                     Testing emotion recognition system using your voice, 
@@ -152,7 +164,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     features = ["mfcc", "chroma", "mel"]
-    detector = EmotionRecognizer(estimator_dict[args.model], emotions=args.emotions.split(","), features=features, verbose=0)
+    detector = EmotionRecognizer(estimator_dict[args.model], emotions=args.emotions.split(","), features=features, verbose=1)
+    print("[*] Training model, please wait (this may take a few minutes)...")
     detector.train()
     print("Test accuracy score: {:.3f}%".format(detector.test_score()*100))
     print("Please talk")

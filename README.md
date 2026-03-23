@@ -7,21 +7,22 @@
 ## Requirements
 - **Python 3.6+**
 ### Python Packages
-- **tensorflow**
-- **librosa==0.6.3**
-- **numpy**
-- **pandas**
-- **soundfile==0.9.0**
+- **tensorflow>=2.21.0**
+- **librosa>=0.11.0**
+- **numpy>=2.1.1**
+- **pandas>=2.2.3**
+- **soundfile>=0.13.1**
 - **wave**
-- **scikit-learn==0.24.2**
-- **tqdm==4.28.1**
-- **matplotlib==2.2.3**
-- **pyaudio==0.2.11**
+- **scikit-learn>=1.5.2**
+- **tqdm>=4.66.5**
+- **matplotlib>=3.10.8**
+- **pyaudio>=0.2.14**
+- **tensorboard>=2.20.0**
 - **[ffmpeg](https://ffmpeg.org/) (optional)**: used if you want to add more sample audio by converting to 16000Hz sample rate and mono channel which is provided in ``convert_wavs.py``
 
 Install these libraries by the following command:
 ```
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Dataset
@@ -203,7 +204,13 @@ This repository can be used to build machine learning classifiers as well as reg
 - BaggingRegressor
 - Recurrent Neural Networks (Keras)
 
-### Testing
+### Testing with Demo Script
+If you are in a non-interactive environment or don't have a microphone, you can run the demo script which uses sample files from the dataset:
+```
+python demo_predict.py
+```
+
+### Testing with Microphone
 You can test your own voice by executing the following command:
 ```
 python test.py

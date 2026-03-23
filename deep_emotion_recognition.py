@@ -1,11 +1,11 @@
 import os
 # disable keras loggings
 import sys
-stderr = sys.stderr
-sys.stderr = open(os.devnull, 'w')
+# stderr = sys.stderr
+# sys.stderr = open(os.devnull, 'w')
 import tensorflow as tf
 
-from tensorflow.keras.layers import LSTM, GRU, Dense, Activation, LeakyReLU, Dropout
+from tensorflow.keras.layers import LSTM, GRU, Dense, Activation, LeakyReLU, Dropout, Input
 from tensorflow.keras.layers import Conv1D, MaxPool1D, GlobalAveragePooling1D
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
@@ -161,7 +161,8 @@ class DeepEmotionRecognizer(EmotionRecognizer):
         for i in range(self.n_rnn_layers):
             if i == 0:
                 # first layer
-                model.add(self.cell(self.rnn_units, return_sequences=True, input_shape=(None, self.input_length)))
+                model.add(Input(shape=(None, self.input_length)))
+                model.add(self.cell(self.rnn_units, return_sequences=True))
                 model.add(Dropout(self.dropout[i]))
             else:
                 # middle layers
@@ -271,7 +272,8 @@ class DeepEmotionRecognizer(EmotionRecognizer):
             prediction = np.argmax(np.squeeze(prediction))
             return self.int2emotions[prediction]
         else:
-            return np.squeeze(self.model.predict(feature))
+            prediction = self.model.predict(feature, verbose=0)
+            return np.squeeze(prediction)
 
     def predict_proba(self, audio_path):
         if self.classification:

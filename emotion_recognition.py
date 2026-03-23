@@ -79,7 +79,7 @@ class EmotionRecognizer:
         self.model_trained = False
 
         # model
-        if not model:
+        if model is None:
             self.determine_best_model()
         else:
             self.model = model
@@ -217,6 +217,14 @@ class EmotionRecognizer:
         
         # loads estimators
         estimators = self.get_best_estimators()
+
+        if not estimators:
+            if self.verbose:
+                print("[!] No pre-trained estimators found or they are incompatible. Using default model (BaggingClassifier).")
+            from sklearn.ensemble import BaggingClassifier
+            self.model = BaggingClassifier()
+            self.model_trained = False
+            return
 
         result = []
 

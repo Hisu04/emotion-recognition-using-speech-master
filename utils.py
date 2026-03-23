@@ -81,7 +81,7 @@ def extract_feature(file_name, **kwargs):
         X = sound_file.read(dtype="float32")
         sample_rate = sound_file.samplerate
         if chroma or contrast:
-            stft = np.abs(librosa.stft(X))
+            stft = np.abs(librosa.stft(y=X))
         result = np.array([])
         if mfcc:
             mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)
@@ -90,13 +90,13 @@ def extract_feature(file_name, **kwargs):
             chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)
             result = np.hstack((result, chroma))
         if mel:
-            mel = np.mean(librosa.feature.melspectrogram(X, sr=sample_rate).T,axis=0)
+            mel = np.mean(librosa.feature.melspectrogram(y=X, sr=sample_rate).T,axis=0)
             result = np.hstack((result, mel))
         if contrast:
             contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T,axis=0)
             result = np.hstack((result, contrast))
         if tonnetz:
-            tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T,axis=0)
+            tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y=X), sr=sample_rate).T,axis=0)
             result = np.hstack((result, tonnetz))
     return result
 
@@ -108,10 +108,14 @@ def get_best_estimators(classification):
     you can fine tune the parameters in `grid_search.py` script
     and run it again ( may take hours )
     """
-    if classification:
-        return pickle.load(open("grid/best_classifiers.pickle", "rb"))
-    else:
-        return pickle.load(open("grid/best_regressors.pickle", "rb"))
+    try:
+        if classification:
+            return pickle.load(open("grid/best_classifiers.pickle", "rb"))
+        else:
+            return pickle.load(open("grid/best_regressors.pickle", "rb"))
+    except Exception as e:
+        print(f"[!] Warning: Could not load pre-trained estimators from grid folder: {e}")
+        return []
 
 
 def get_audio_config(features_list):
