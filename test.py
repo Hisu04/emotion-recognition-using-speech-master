@@ -1,4 +1,4 @@
-from emotion_recognition import EmotionRecognizer
+from core.emotion_recognition import EmotionRecognizer
 
 import pyaudio
 import os
@@ -8,7 +8,7 @@ from array import array
 from struct import pack
 from sklearn.ensemble import GradientBoostingClassifier, BaggingClassifier
 
-from utils import get_best_estimators
+from core.utils import get_best_estimators
 
 THRESHOLD = 500
 CHUNK_SIZE = 1024

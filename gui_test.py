@@ -8,8 +8,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pyaudio
 import wave
 from array import array
-from emotion_recognition import EmotionRecognizer
-from utils import get_audio_config
+from core.emotion_recognition import EmotionRecognizer
+from core.utils import get_audio_config
 
 # Constants for Recording
 THRESHOLD = 500
@@ -21,9 +21,9 @@ SILENCE = 30
 class EmotionGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Speech Emotion Recognition - Pro Version")
-        self.root.geometry("900x700")
-        self.root.configure(bg="#2c3e50")
+        self.root.title("Speech Emotion Recognition - Modern UI")
+        self.root.geometry("1000x650")
+        self.root.configure(bg="#0f172a")
 
         # Initialize Recognizer
         self.emotions = ["sad", "neutral", "happy", "angry", "fear"]
@@ -35,52 +35,54 @@ class EmotionGUI:
 
     def setup_ui(self):
         # Header
-        header = tk.Label(self.root, text="Hệ thống Nhận dạng Cảm xúc Giọng nói", 
-                         font=("Helvetica", 20, "bold"), fg="white", bg="#2c3e50", pady=20)
+        header = tk.Label(self.root, text="HỆ THỐNG NHẬN DẠNG CẢM XÚC", 
+                         font=("Segoe UI", 22, "bold"), fg="#f8fafc", bg="#0f172a", pady=25)
         header.pack()
 
         # Main Layout
-        main_frame = tk.Frame(self.root, bg="#2c3e50")
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        main_frame = tk.Frame(self.root, bg="#0f172a")
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=30, pady=10)
 
         # Left Side - Controls & Result
-        control_frame = tk.Frame(main_frame, bg="#34495e", bd=2, relief=tk.RIDGE)
-        control_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
+        control_frame = tk.Frame(main_frame, bg="#1e293b", bd=0, highlightthickness=1, highlightbackground="#334155")
+        control_frame.pack(side=tk.LEFT, fill=tk.Y, padx=15, pady=10, ipadx=10)
 
         self.status_label = tk.Label(control_frame, text="Đang khởi tạo mô hình...", 
-                                   fg="#f1c40f", bg="#34495e", font=("Helvetica", 12))
-        self.status_label.pack(pady=20, padx=20)
+                                   fg="#38bdf8", bg="#1e293b", font=("Segoe UI", 12))
+        self.status_label.pack(pady=25, padx=20)
 
-        self.record_btn = tk.Button(control_frame, text="🔴 Ghi âm", command=self.start_recording,
-                                  font=("Helvetica", 14), bg="#e74c3c", fg="white", 
-                                  width=15, state=tk.DISABLED)
-        self.record_btn.pack(pady=10, padx=20)
+        self.record_btn = tk.Button(control_frame, text="🔴 Bắt đầu Ghi âm", command=self.start_recording,
+                                  font=("Segoe UI", 14, "bold"), bg="#ef4444", fg="white", 
+                                  width=18, state=tk.DISABLED, relief=tk.FLAT, activebackground="#dc2626", activeforeground="white")
+        self.record_btn.pack(pady=15, padx=20)
 
         self.result_title = tk.Label(control_frame, text="Kết quả dự đoán:", 
-                                   fg="white", bg="#34495e", font=("Helvetica", 12))
-        self.result_title.pack(pady=(30, 0))
+                                   fg="#94a3b8", bg="#1e293b", font=("Segoe UI", 12))
+        self.result_title.pack(pady=(40, 5))
 
         self.result_label = tk.Label(control_frame, text="---", 
-                                   fg="#2ecc71", bg="#34495e", font=("Helvetica", 24, "bold"))
+                                   fg="#10b981", bg="#1e293b", font=("Segoe UI", 28, "bold"))
         self.result_label.pack(pady=10)
 
         # Info Frame
-        info_frame = tk.Frame(control_frame, bg="#34495e")
-        info_frame.pack(pady=20)
+        info_frame = tk.Frame(control_frame, bg="#1e293b")
+        info_frame.pack(side=tk.BOTTOM, pady=25)
         
-        tk.Label(info_frame, text="Mô hình: Random Forest", fg="#bdc3c7", bg="#34495e").pack()
-        tk.Label(info_frame, text="Dataset: RAVDESS/TESS/EMO-DB", fg="#bdc3c7", bg="#34495e").pack()
+        tk.Label(info_frame, text="Mô hình: Random Forest", fg="#64748b", bg="#1e293b", font=("Segoe UI", 10)).pack()
+        tk.Label(info_frame, text="Dataset: RAVDESS/TESS/EMO-DB", fg="#64748b", bg="#1e293b", font=("Segoe UI", 10)).pack()
 
         # Right Side - Visualization
-        viz_frame = tk.Frame(main_frame, bg="#2c3e50")
-        viz_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        viz_frame = tk.Frame(main_frame, bg="#0f172a")
+        viz_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(10, 0))
 
         # Matplotlib Figure
-        self.fig, self.ax = plt.subplots(figsize=(5, 4), dpi=100)
-        self.fig.patch.set_facecolor('#2c3e50')
-        self.ax.set_facecolor('#34495e')
-        self.ax.tick_params(colors='white')
-        self.ax.set_title("Waveform (Âm thanh của bạn)", color='white')
+        self.fig, self.ax = plt.subplots(figsize=(6, 4), dpi=100)
+        self.fig.patch.set_facecolor('#0f172a')
+        self.ax.set_facecolor('#1e293b')
+        self.ax.tick_params(colors='#94a3b8')
+        for spine in self.ax.spines.values():
+            spine.set_color('#334155')
+        self.ax.set_title("Biểu đồ Sóng âm (Waveform)", color='#f8fafc', fontfamily='sans-serif', fontsize=14, pad=15)
         
         self.canvas = FigureCanvasTkAgg(self.fig, master=viz_frame)
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
@@ -101,12 +103,12 @@ class EmotionGUI:
         threading.Thread(target=task, daemon=True).start()
 
     def on_detector_ready(self):
-        self.status_label.config(text="Hệ thống đã sẵn sàng!", fg="#2ecc71")
-        self.record_btn.config(state=tk.NORMAL)
+        self.status_label.config(text="Hệ thống đã sẵn sàng!", fg="#10b981")
+        self.record_btn.config(state=tk.NORMAL, bg="#6366f1", activebackground="#4f46e5", text="🔴 Bắt đầu Ghi âm")
 
     def start_recording(self):
-        self.record_btn.config(state=tk.DISABLED, text="⌛ Đang ghi âm...", bg="#95a5a6")
-        self.status_label.config(text="Hãy nói đi, tôi đang lắng nghe...", fg="#3498db")
+        self.record_btn.config(state=tk.DISABLED, text="⌛ Đang phân tích...", bg="#ef4444")
+        self.status_label.config(text="Hãy nói đi, tôi đang lắng nghe...", fg="#38bdf8")
         self.result_label.config(text="---")
         
         threading.Thread(target=self.record_and_predict, daemon=True).start()
@@ -132,10 +134,12 @@ class EmotionGUI:
         
         # Update Plot
         self.ax.clear()
-        self.ax.plot(data, color='#2ecc71')
-        self.ax.set_title(f"Waveform - Cảm xúc: {result}", color='white')
-        self.ax.set_facecolor('#34495e')
-        self.ax.tick_params(colors='white')
+        self.ax.plot(data, color='#38bdf8', linewidth=1.5)
+        self.ax.set_title(f"Waveform - Cảm xúc: {result}", color='#f8fafc', fontfamily='sans-serif', fontsize=14, pad=15)
+        self.ax.set_facecolor('#1e293b')
+        self.ax.tick_params(colors='#94a3b8')
+        for spine in self.ax.spines.values():
+            spine.set_color('#334155')
         self.canvas.draw()
 
     def record(self):
@@ -163,6 +167,28 @@ class EmotionGUI:
         stream.stop_stream()
         stream.close()
         p.terminate()
+
+        # Tiền xử lý: Tự động loại bỏ tiếng ồn/khoảng lặng dư thừa
+        start_idx = 0
+        end_idx = len(r) - 1
+        
+        for i in range(len(r)):
+            if abs(r[i]) > THRESHOLD:
+                start_idx = i
+                break
+                
+        for i in range(len(r)-1, -1, -1):
+            if abs(r[i]) > THRESHOLD:
+                end_idx = i
+                break
+                
+        # Chừa lại một biên độ khoảng 0.12s (2000 mảng/frames) để audio tự nhiên
+        start_idx = max(0, start_idx - 2000)
+        end_idx = min(len(r), end_idx + 2000)
+        
+        if start_idx < end_idx:
+            r = r[start_idx:end_idx]
+
         return sample_width, r
 
     def save_wave(self, path, sample_width, data):

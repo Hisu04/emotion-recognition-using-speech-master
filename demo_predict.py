@@ -1,4 +1,4 @@
-from emotion_recognition import EmotionRecognizer
+from core.emotion_recognition import EmotionRecognizer
 import os
 import random
 from sklearn.neural_network import MLPClassifier
