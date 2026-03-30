@@ -8,7 +8,7 @@ tags:
 created: 2026-03-30
 updated: 2026-03-30
 ---
-
+**
 # TÀI LIỆU ĐẶC TẢ VÀ THIẾT KẾ MODULE: CORE (LÕI HỆ THỐNG)
 
 > [!abstract] TỔNG QUAN
@@ -139,16 +139,16 @@ flowchart LR
 
 **Luồng xử lý chính (Normal Flow):**
 
-| Bước | Tác nhân | Hành động |
-|------|----------|-----------|
-| 1 | `EmotionRecognizer` | Kiểm tra `data_loaded`; nếu `True` thì bỏ qua |
-| 2 | `load_data()` | Khởi tạo `AudioExtractor(audio_config, emotions, balance)` |
-| 3 | `AudioExtractor` | Gọi `load_train_data(train_desc_files)` → đọc CSV, ghép DataFrame |
-| 4 | `load_metadata_from_desc_file()` | Xây dựng tên file cache: `features/{partition}_{label}_{emotions}_{n}.npy` |
-| 5 | `AudioExtractor` | Nếu cache tồn tại → `np.load(name)`; nếu không → trích xuất từng file WAV bằng `extract_feature()` → `np.save(name)` |
-| 6 | `_balance_data("train")` | Đếm số mẫu mỗi lớp; lấy `minimum = min(count)`, giữ đúng `minimum` mẫu mỗi cảm xúc |
-| 7 | `AudioExtractor` | Lặp lại bước 3-6 cho `load_test_data(test_desc_files)` |
-| 8 | `load_data()` | Trả về dict `{X_train, X_test, y_train, y_test, train_audio_paths, test_audio_paths}` |
+| Bước | Tác nhân                         | Hành động                                                                                                            |
+| ---- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1    | `EmotionRecognizer`              | Kiểm tra `data_loaded`; nếu `True` thì bỏ qua                                                                        |
+| 2    | `load_data()`                    | Khởi tạo `AudioExtractor(audio_config, emotions, balance)`                                                           |
+| 3    | `AudioExtractor`                 | Gọi `load_train_data(train_desc_files)` → đọc CSV, ghép DataFrame                                                    |
+| 4    | `load_metadata_from_desc_file()` | Xây dựng tên file cache: `features/{partition}_{label}_{emotions}_{n}.npy`                                           |
+| 5    | `AudioExtractor`                 | Nếu cache tồn tại → `np.load(name)`; nếu không → trích xuất từng file WAV bằng `extract_feature()` → `np.save(name)` |
+| 6    | `_balance_data("train")`         | Đếm số mẫu mỗi lớp; lấy `minimum = min(count)`, giữ đúng `minimum` mẫu mỗi cảm xúc                                   |
+| 7    | `AudioExtractor`                 | Lặp lại bước 3-6 cho `load_test_data(test_desc_files)`                                                               |
+| 8    | `load_data()`                    | Trả về dict `{X_train, X_test, y_train, y_test, train_audio_paths, test_audio_paths}`                                |
 
 **Luồng thay thế (Alternative Flow):**
 

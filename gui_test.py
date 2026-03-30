@@ -1,7 +1,7 @@
 import os
 import threading
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog
+from tkinter import ttk, messagebox
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -56,10 +56,6 @@ class EmotionGUI:
                                   width=18, state=tk.DISABLED, relief=tk.FLAT, activebackground="#dc2626", activeforeground="white")
         self.record_btn.pack(pady=15, padx=20)
 
-        self.file_btn = tk.Button(control_frame, text="📂 Tải file WAV", command=self.predict_from_file,
-                                 font=("Segoe UI", 13), bg="#0ea5e9", fg="white",
-                                 width=18, state=tk.DISABLED, relief=tk.FLAT, activebackground="#0284c7", activeforeground="white")
-        self.file_btn.pack(pady=5, padx=20)
 
         self.result_title = tk.Label(control_frame, text="Kết quả dự đoán:", 
                                    fg="#94a3b8", bg="#1e293b", font=("Segoe UI", 12))
@@ -110,44 +106,13 @@ class EmotionGUI:
     def on_detector_ready(self):
         self.status_label.config(text="Hệ thống đã sẵn sàng!", fg="#10b981")
         self.record_btn.config(state=tk.NORMAL, bg="#6366f1", activebackground="#4f46e5", text="🔴 Bắt đầu Ghi âm")
-        self.file_btn.config(state=tk.NORMAL)
 
     def start_recording(self):
         self.record_btn.config(state=tk.DISABLED, text="⌛ Đang phân tích...", bg="#ef4444")
-        self.file_btn.config(state=tk.DISABLED)
         self.status_label.config(text="Hãy nói đi, tôi đang lắng nghe...", fg="#38bdf8")
         self.result_label.config(text="---")
         
         threading.Thread(target=self.record_and_predict, daemon=True).start()
-
-    def predict_from_file(self):
-        file_path = filedialog.askopenfilename(
-            title="Chọn file âm thanh WAV",
-            filetypes=[("WAV files", "*.wav"), ("All files", "*.*")]
-        )
-        if not file_path:
-            return
-        self.record_btn.config(state=tk.DISABLED)
-        self.file_btn.config(state=tk.DISABLED, text="⌛ Đang phân tích...")
-        self.status_label.config(text=f"Đang phân tích: {os.path.basename(file_path)}", fg="#38bdf8")
-        self.result_label.config(text="---")
-        threading.Thread(target=self._predict_file_thread, args=(file_path,), daemon=True).start()
-
-    def _predict_file_thread(self, file_path):
-        try:
-            result = self.detector.predict(file_path)
-            # Đọc waveform từ file để vẽ
-            wf = wave.open(file_path, 'rb')
-            n_frames = wf.getnframes()
-            raw = wf.readframes(n_frames)
-            wf.close()
-            import struct
-            n_samples = len(raw) // 2
-            data = array('h', struct.unpack('<' + 'h' * n_samples, raw))
-            self.root.after(0, lambda: self.update_result(result, data, label=os.path.basename(file_path)))
-        except Exception as e:
-            self.root.after(0, lambda: messagebox.showerror("Lỗi", str(e)))
-            self.root.after(0, self.on_detector_ready)
 
     def record_and_predict(self):
         filename = "gui_test.wav"
@@ -164,18 +129,14 @@ class EmotionGUI:
             self.root.after(0, lambda: messagebox.showerror("Lỗi Ghi âm", str(e)))
             self.root.after(0, self.on_detector_ready)
 
-    def update_result(self, result, data, label=None):
+    def update_result(self, result, data):
         self.result_label.config(text=result.upper())
         self.on_detector_ready()
-        self.file_btn.config(text="📂 Tải file WAV")
         
         # Update Plot
         self.ax.clear()
         self.ax.plot(data, color='#38bdf8', linewidth=1.5)
-        title_str = f"Waveform - Cảm xúc: {result}"
-        if label:
-            title_str += f"  [{label}]"
-        self.ax.set_title(title_str, color='#f8fafc', fontfamily='sans-serif', fontsize=13, pad=15)
+        self.ax.set_title(f"Waveform - Cảm xúc: {result}", color='#f8fafc', fontfamily='sans-serif', fontsize=14, pad=15)
         self.ax.set_facecolor('#1e293b')
         self.ax.tick_params(colors='#94a3b8')
         for spine in self.ax.spines.values():
