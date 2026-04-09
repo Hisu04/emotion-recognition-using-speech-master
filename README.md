@@ -331,14 +331,14 @@ python tools/grid_search.py
 
 **Tham số tốt nhất đã tìm được:**
 
-| Thuật toán                  | Tham số tốt nhất                                         |
-|-----------------------------|----------------------------------------------------------|
-| SVC                         | `C=0.001, gamma=0.001, kernel='poly'`                   |
-| RandomForestClassifier      | `max_depth=7, max_features=0.5, n_estimators=40`        |
-| GradientBoostingClassifier  | `lr=0.3, max_depth=7, n_estimators=70`                  |
-| KNeighborsClassifier        | `n_neighbors=5, p=1, weights='distance'`                |
-| **MLPClassifier** ⭐         | `alpha=0.005, hidden=(300,), batch=256, max_iter=500`   |
-| BaggingClassifier           | `n_estimators=50, max_samples=0.8`                      |
+| Thuật toán                 | Tham số tốt nhất                                      |
+| -------------------------- | ----------------------------------------------------- |
+| SVC                        | `C=0.001, gamma=0.001, kernel='poly'`                 |
+| RandomForestClassifier     | `max_depth=7, max_features=0.5, n_estimators=40`      |
+| GradientBoostingClassifier | `lr=0.3, max_depth=7, n_estimators=70`                |
+| KNeighborsClassifier       | `n_neighbors=5, p=1, weights='distance'`              |
+| **MLPClassifier** ⭐        | `alpha=0.005, hidden=(300,), batch=256, max_iter=500` |
+| BaggingClassifier          | `n_estimators=50, max_samples=0.8`                    |
 
 ### Vẽ biểu đồ so sánh
 
